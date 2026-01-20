@@ -22,13 +22,10 @@ import UserRoute from "./UserRoute";
 export default function AppRoutes() {
   return (
     <Routes>
-     
       <Route path="/" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
-
       <Route element={<ProtectedRoute />}>
         
-       
         <Route element={<UserRoute />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Home />} />
@@ -36,8 +33,7 @@ export default function AppRoutes() {
             <Route path="requests" element={<Requests />} />
           </Route>
         </Route>
-
-       
+ 
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<DashboardLayout />}>
             <Route index element={<AdminDashboard />} />

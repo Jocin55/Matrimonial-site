@@ -1,19 +1,43 @@
-const AccessRequest = require("../models/AccessRequest");
+const ProfileAccess = require("../models/ProfileAccess");
+const User = require("../models/User");
 
 exports.createRequest = async (req, res) => {
-  const { brideId } = req.body;
+  try {
+    const { targetUserId } = req.body;
 
-  await AccessRequest.create({
-    groom: req.user.id,
-    bride: brideId,
-  });
+    // check duplicate request
+    const existingRequest = await ProfileAccess.findOne({
+      requester: req.user.id,
+      targetUser: targetUserId,
+      approved: false,
+    });
 
-  res.json({ message: "Access request sent to admin" });
+    if (existingRequest) {
+      return res.status(400).json({ message: "Request already sent" });
+    }
+
+    await ProfileAccess.create({
+      requester: req.user.id,
+      targetUser: targetUserId,
+    });
+
+    res.status(200).json({ message: "Access request sent to admin" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 exports.myRequests = async (req, res) => {
-  const requests = await AccessRequest.find({ groom: req.user.id })
-    .populate("bride", "name status");
+  try {
+    const requests = await ProfileAccess.find({
+      requester: req.user.id,
+    })
+      .populate("targetUser", "name age");
 
-  res.json(requests);
+    res.status(200).json(requests);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };

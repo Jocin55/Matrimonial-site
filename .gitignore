@@ -1,4 +1,11 @@
-node_modules
+# Root ignores
+node_modules/
 .env
-dist
-build
+
+# Client
+client/node_modules/
+client/.env
+
+# Server
+server/node_modules/
+server/.env

@@ -1,8 +1,4 @@
 export default function BrowseProfiles() {
-  const profiles = [
-    { id: 1, name: "Anjali", age: 26, location: "Chennai" },
-    { id: 2, name: "Priya", age: 27, location: "Bangalore" },
-  ];
 
   return (
     <div>

@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { getUserRole } from "../utils/auth";
+import { getUserRole, isAuthenticated } from "../utils/auth";
 
 export default function UserRoute() {
+  if (!isAuthenticated()) return <Navigate to="/" replace />;
   return getUserRole() === "user" ? (
     <Outlet />
   ) : (

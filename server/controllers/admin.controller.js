@@ -2,7 +2,7 @@ const Admin = require('../models/Admin');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
-const AccessRequest = require("../models/AccessRequest");
+const ProfileAccess = require("../models/ProfileAccess");
 const Session = require("../models/Session");
 
 // Admin login
@@ -35,28 +35,54 @@ exports.approveUser = async (req, res) => {
   await User.findByIdAndUpdate(req.params.id, { approved: true });
   res.json({ message: "User approved successfully" });
 };
-
 // Get pending access requests
 exports.getAccessRequests = async (req, res) => {
-  const requests = await AccessRequest.find({ status: "pending" })
-    .populate("groom", "name")
-    .populate("bride", "name");
+  try {
+    const requests = await ProfileAccess.find({ approved: false })
+      .populate("requester", "name email")
+      .populate("targetUser", "name email");
 
-  res.json(requests);
+    res.json(requests);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Approve access request
 exports.approveAccess = async (req, res) => {
-  const request = await AccessRequest.findById(req.params.id);
-  request.status = "approved";
-  request.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-  await request.save();
+  try {
+    const request = await ProfileAccess.findById(req.params.id);
 
-  await Session.create({
-    viewer: request.groom,
-    profileOwner: request.bride,
-    expiresAt: request.expiresAt,
-  });
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
 
-  res.json({ message: "Access granted for 24 hours" });
+    request.approved = true;
+    request.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await request.save();
+
+    await Session.create({
+      viewer: request.requester,
+      profileOwner: request.targetUser,
+      expiresAt: request.expiresAt,
+    });
+
+    res.json({ message: "Access approved for 24 hours" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+// Deny access request
+exports.denyAccess = async (req, res) => {
+  try {
+    await ProfileAccess.findByIdAndDelete(req.params.id);
+    res.json({ message: "Access request denied" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 };

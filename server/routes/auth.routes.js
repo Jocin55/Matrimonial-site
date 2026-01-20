@@ -6,8 +6,13 @@ const router = express.Router();
 
 router.post('/signup', async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await User.create({ ...req.body, password: hashedPassword });
+    const { married, ...userData } = req.body;
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const user = await User.create({
+      ...userData,
+      password: hashedPassword,
+      isMarried: married === 'yes'
+    });
     res.status(201).json({ message: 'User created' });
   } catch (err) {
     res.status(500).json({ message: err.message });

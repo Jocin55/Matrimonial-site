@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../api/axios";
+import adminApi from "../../api/adminAxios";
 
 export default function UserApprovals() {
   const [users, setUsers] = useState([]);
@@ -8,7 +8,7 @@ export default function UserApprovals() {
   useEffect(() => {
     const fetchPendingUsers = async () => {
       try {
-        const res = await api.get("/admin/pending");
+        const res = await adminApi.get("/admin/pending");
         setUsers(res.data);
       } catch (err) {
         console.error(err);
@@ -23,8 +23,8 @@ export default function UserApprovals() {
 
   const approveUser = async (id) => {
     try {
-      await api.put(`/admin/approve/${id}`);
-      setUsers(users.filter(user => user._id !== id));
+      await adminApi.put(`/admin/approve/${id}`);
+      setUsers(users.filter((user) => user._id !== id));
     } catch (err) {
       alert("Approval failed");
     }
@@ -40,20 +40,14 @@ export default function UserApprovals() {
         <p>No pending users</p>
       ) : (
         <div className="space-y-4">
-          {users.map(user => (
-            <div
-              key={user._id}
-              className="bg-white p-4 rounded shadow flex justify-between items-center"
-            >
+          {users.map((user) => (
+            <div key={user._id} className="bg-white p-4 rounded shadow flex justify-between items-center">
               <div>
                 <p className="font-semibold">{user.name}</p>
                 <p className="text-gray-600">{user.email}</p>
               </div>
 
-              <button
-                onClick={() => approveUser(user._id)}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              >
+              <button onClick={() => approveUser(user._id)}className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                 Approve
               </button>
             </div>

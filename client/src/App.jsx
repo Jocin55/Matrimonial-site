@@ -16,38 +16,34 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserApprovals from "./pages/admin/UserApprovals";
 import AccessRequests from "./pages/admin/AccessRequests";
 
-// Layouts
+// Layout
 import DashboardLayout from "./layouts/DashboardLayout";
 
 // Protected route for users
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token"); // simple check
+  const token = localStorage.getItem("userToken"); 
   return token ? children : <Navigate to="/" />;
 };
 
 // Protected route for admin
 const AdminProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("adminToken"); // store admin token separately
+  const token = localStorage.getItem("adminToken"); 
   return token ? children : <Navigate to="/admin/login" />;
 };
 
 export default function App() {
   return (
+    
     <Routes>
       {/* Auth routes */}
       <Route path="/" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
 
       {/* User dashboard routes */}
-      <Route
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
+      <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profiles/:id" element={<Profile />} />
         <Route path="/browse" element={<BrowseProfiles />} />
         <Route path="/requests" element={<Requests />} />
       </Route>
@@ -56,13 +52,7 @@ export default function App() {
       <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Admin dashboard routes */}
-      <Route
-        element={
-          <AdminProtectedRoute>
-            <DashboardLayout /> {/* you can create a separate AdminLayout if needed */}
-          </AdminProtectedRoute>
-        }
-      >
+      <Route element={<AdminProtectedRoute><DashboardLayout /></AdminProtectedRoute>}>
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/approvals" element={<UserApprovals />} />
         <Route path="/admin/access" element={<AccessRequests />} />

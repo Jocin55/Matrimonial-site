@@ -6,13 +6,10 @@ exports.signup = async (req, res) => {
   try {
     const hashed = await bcrypt.hash(req.body.password, 10);
 
-    await User.create({
+    const user = await User.create({
       ...req.body,
       password: hashed,
     });
-
-    await user.save();
-    console.log("saved user:", user)
 
     res.json({ message: "Signup successful. Await admin approval." });
   } catch (err) {

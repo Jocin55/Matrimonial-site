@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import api from "../../api/axios";
+import api from "../../api/adminAxios";
 
 const AdminDashboard = () => {
   const [profiles, setProfiles] = React.useState([]);
@@ -27,18 +27,10 @@ const AdminDashboard = () => {
           <p>Approve or reject new user registrations.</p>
         </Link>
 
-        <Link to="/admin/access-requests" className="bg-white p-6 rounded shadow hover:shadow-lg transition">
+        <Link to="/admin/access" className="bg-white p-6 rounded shadow hover:shadow-lg transition">
           <h2 className="text-xl font-semibold mb-2">Access Requests</h2>
           <p>View and manage special access requests.</p>
         </Link>
-
-        {profiles.map((profile) => (
-          <Link key={profile._id} to={`/admin/profile/${profile._id}`} className="bg-white p-6 rounded shadow hover:shadow-lg transition">
-            <h2 className="text-xl font-semibold mb-2">{profile.name}</h2>
-            <p>Age: {profile.age}</p>
-            <p>Location: {profile.location}</p>
-          </Link>
-        ))}
       </div>
     </div>
   );
